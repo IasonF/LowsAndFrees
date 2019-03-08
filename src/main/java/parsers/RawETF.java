@@ -1,47 +1,30 @@
 package parsers;
 
 import entities.ETF;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.text.CaseUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import utils.ApplicationDirectories;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import java.lang.reflect.InvocationTargetException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 class RawETF {
     private static final Logger logger = Logger.getLogger(RawETF.class.getName());
+    private static ETF etf;
 
-    static ETF parse(String isim) {
-        ETF etf = new ETF();
+    static ETF parse(String isim, String exchange) {
+        etf = new ETF();
         etf.setIsim(isim);
-        try (Stream<String> stream = Files.lines(ApplicationDirectories.getDataDir().resolve(isim + ".html"))) {
-            stream.filter(s -> s.contains("% p.a.</div>"))
-                    .map(s -> Double.parseDouble(s.replaceAll("\\D+", ""))/100)
-                    .forEach(etf::setTer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        /*
-        try (Stream<String> stream = Files.lines(ApplicationDirectories.getDataDir().resolve(isim + ".html"))) {
-            stream.filter(s -> s.contains("<title>"))
-                    .map(s -> s.matches("<title> \\s+ </title>"))
-                    .forEach(etf::setTer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-        return etf;
-    }
+        etf.setExchange(exchange);
 
-    static ETF jsoupParse (String isim) {
         File input = new File(ApplicationDirectories.getDataDir().resolve(isim + ".html").toString());
         Document doc = null;
         try {
@@ -50,26 +33,41 @@ class RawETF {
             logger.warning("Cannot parse ETF: " + isim + e.getMessage());
         }
 
+        assert doc != null;
         Elements valueLabels = doc.getElementsByClass("vallabel");
         valueLabels.stream()
-                .peek(element -> System.out.println(element.text()))
-                .map(element -> Objects.nonNull(element.previousElementSibling())? element.previousElementSibling():element.nextElementSibling())
-                .filter(Objects::nonNull)
-                .map(Element::text)
-                .forEach(System.out::println);
+                .map(RawETF::findAttributeValuePair)
+                .forEach(RawETF::setField);
 
-        String s = String.format("%n====================== %n %n");
-        System.out.print(s);
 
         Elements headerLabels = doc.getElementsByClass("h5");
         headerLabels.stream()
-                .peek(element -> System.out.println(element.text()))
+                .filter(element -> element.text().contains("Investment strategy"))
                 .map(Element::nextElementSibling)
                 .filter(Objects::nonNull)
-                .map(Element::text)
-                .forEach(System.out::println);
+                .forEach(element -> etf.setDescription(element.text()));
 
-        return new ETF();
+        System.out.println(etf);
+        return etf;
 
+    }
+
+    private static void setField(SimpleEntry<String, String> pair) {
+        String fieldName = CaseUtils.toCamelCase(pair.getKey().replaceAll("[^A-Za-z\\s]", ""), false);
+        try {
+            PropertyUtils.setProperty(etf,fieldName, pair.getValue());
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            //Just continue, if ETF object is not interested in that specific field. todo: print warning
+        }
+    }
+
+    private static SimpleEntry<String, String> findAttributeValuePair(Element attributeElement) {
+        String attribute = attributeElement.text();
+        String value = null;
+        Element valueElement = Objects.nonNull(attributeElement.previousElementSibling()) ?
+                attributeElement.previousElementSibling() : attributeElement.nextElementSibling();
+        if (Objects.nonNull(valueElement))
+            value = valueElement.text();
+        return new SimpleEntry<>(attribute, value);
     }
 }

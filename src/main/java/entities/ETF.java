@@ -7,9 +7,18 @@ import java.util.Currency;
 @Data
 public class ETF {
     String isim;
-    String name;
-    Double ter;
+    String description;
+    String totalExpenseRatio;
+    String weeksLowhigh;
+    String fundSize;
+    String replication;
+    String fundCurrency;
+    String currencyRisk;
+    String volatilityYearInEur;
     String exchange;
-    Currency currency;
-    DistributionPolicy distributionPolicy;
+    String distributionPolicy;
+    String distributionFrequency;
+    String fundDomicile;
+    String performanceInclDividend;
+    String fundProvider;
 }

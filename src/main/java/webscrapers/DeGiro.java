@@ -12,11 +12,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Data
 public class DeGiro {
@@ -27,8 +26,18 @@ public class DeGiro {
     static List<String> isim = new ArrayList<>();
     static List<String> exchange = new ArrayList<>();
 
-    public static List<String> getIsim() throws IOException {
+    public static List<String> getCodes() throws IOException {
         return Files.lines(resultPath).map(s -> s.split(" ")[0]).collect(Collectors.toList());
+    }
+
+    public static List<String> getExchanges() throws IOException {
+        return Files.lines(resultPath).map(s -> s.split(" ")[1]).collect(Collectors.toList());
+    }
+
+    static Map<String, String> getCodesAndExchanges() throws IOException {
+        isim = getCodes();
+        exchange = getExchanges();
+        return IntStream.range(0, isim.size()).boxed().collect(Collectors.toMap(isim::get, exchange::get));
     }
 
     public static void extractInfo() throws IOException {
@@ -64,7 +73,7 @@ public class DeGiro {
 
     }
 
-    public static void downloadList() throws IOException {
+    static void downloadList() throws IOException {
         URL url = new URL("https://www.degiro.ie/data/pdf/ie/commission-free-etfs-list.pdf");
         InputStream in = url.openStream();
         Files.copy(in, degiroListPath);

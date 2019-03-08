@@ -8,7 +8,7 @@ public class Orchestrator {
 
     public static void main(String[] args) throws IOException {
         DeGiro.extractInfo();
-        List<String> isim = DeGiro.getIsim();
+        List<String> isim = DeGiro.getCodes();
         JustETF.fetchHTML(isim);
     }
 }
