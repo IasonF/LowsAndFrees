@@ -8,21 +8,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class RawETFTest {
 
     @Test
     void parseTest() throws IOException {
-        List<String> isim = DeGiro.getIsim();
-        isim.forEach(System.out::println);
+        List<String> isim = DeGiro.getCodes();
+        List<String> exchange = DeGiro.getExchanges();
+        ETF etf;
         List<ETF> etfs = new ArrayList<>();
-        isim.stream().map(RawETF::parse).forEach(etfs::add);
+        /*
+        for (int i = 0; i < isim.size(); i++) {
+            etf = new ETF();
+            etf.setIsim(isim.get(i));
+            etf.setExchange(exchange.get(i));
+            etfs.add(etf);
+        }
         etfs.forEach(System.out::println);
-    }
+        */
 
-    @Test
-    void jsoupParseTest() {
-        RawETF.jsoupParse("IE00B3XXRP09");
+        RawETF.parse("IE00B3XXRP09", "Paris");
     }
 }
