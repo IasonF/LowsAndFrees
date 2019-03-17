@@ -1,12 +1,18 @@
-package entities;
+package app.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Currency;
+import javax.persistence.*;
 
 @Data
+@Entity
+@NoArgsConstructor
 public class ETF {
+    @Id
+    private long id;
     String isim;
+    @Lob
     String description;
     String totalExpenseRatio;
     String weeksLowhigh;

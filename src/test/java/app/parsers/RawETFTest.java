@@ -1,8 +1,8 @@
-package parsers;
+package app.parsers;
 
-import entities.ETF;
+import app.entities.ETF;
 import org.junit.jupiter.api.Test;
-import webscrapers.DeGiro;
+import app.webscrapers.DeGiro;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +26,6 @@ class RawETFTest {
         etfs.forEach(System.out::println);
         */
 
-        RawETF.parse("IE00B3XXRP09", "Paris");
+        ETF parse = HTML.parse("IE00B3XXRP09", "Paris");
     }
 }

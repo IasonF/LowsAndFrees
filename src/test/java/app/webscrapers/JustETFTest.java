@@ -1,7 +1,6 @@
-package webscrapers;
+package app.webscrapers;
 
 import org.junit.jupiter.api.Test;
-import webscrapers.JustETF;
 
 import java.net.MalformedURLException;
 

@@ -1,9 +1,9 @@
-package webscrapers;
+package app.webscrapers;
 
 import lombok.Data;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import utils.ApplicationDirectories;
+import app.utils.ApplicationDirectories;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class DeGiro {
         return Files.lines(resultPath).map(s -> s.split(" ")[1]).collect(Collectors.toList());
     }
 
-    static Map<String, String> getCodesAndExchanges() throws IOException {
+    public static Map<String, String> getCodesAndExchanges() throws IOException {
         isim = getCodes();
         exchange = getExchanges();
         return IntStream.range(0, isim.size()).boxed().collect(Collectors.toMap(isim::get, exchange::get));
