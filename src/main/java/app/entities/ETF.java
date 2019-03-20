@@ -10,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class ETF {
     @Id
-    private long id;
+    private Long id;
     String isim;
     @Lob
     String description;
