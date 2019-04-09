@@ -5,9 +5,11 @@ import app.repository.EtfRepository;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -32,11 +34,14 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
      * The currently edited etf
      */
     private ETF etf;
+    private String information = "Default ETF description";
 
     /* Fields to edit properties in Customer entity */
     TextField exchange = new TextField("exchange");
     TextField totalExpenseRatio = new TextField("totalExpenseRatio");
-    TextField description = new TextField("description");
+    TextArea description = new TextArea("description");
+    TextArea fundDomicile = new TextArea("Country of fund");
+
 
     /* Action buttons */
     // TODO why more code?
@@ -52,7 +57,12 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
     public EtfEditor(EtfRepository repository) {
         this.repository = repository;
 
-        add(exchange, totalExpenseRatio, description, actions);
+        Label descriptionLabel = new Label(information);
+        HorizontalLayout informationLayout = new HorizontalLayout();
+        informationLayout.add(descriptionLabel);
+
+        description.setWidthFull();
+        add(informationLayout, exchange, totalExpenseRatio, description, fundDomicile, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
@@ -95,8 +105,7 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
         if (persisted) {
             // Find fresh entity for editing
             etf = repository.findById(c.getId()).get();
-        }
-        else {
+        } else {
             etf = c;
         }
         cancel.setVisible(persisted);

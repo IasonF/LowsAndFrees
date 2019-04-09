@@ -4,7 +4,6 @@ import app.entities.ETF;
 import app.repository.EtfRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,7 +36,7 @@ public class MainView extends VerticalLayout {
         HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
         add(actions, grid, editor);
 
-//        grid.setHeight("300px");
+        grid.setHeight("300px");
         grid.setHeightByRows(true);
         grid.setColumns("description", "exchange", "totalExpenseRatio");
         grid.getColumnByKey("description").setWidth("1000px").setFlexGrow(0);
@@ -71,8 +70,7 @@ public class MainView extends VerticalLayout {
     void listCustomers(String filterText) {
         if (StringUtils.isEmpty(filterText)) {
             grid.setItems(repository.findAll());
-        }
-        else {
+        } else {
             grid.setItems(repository.findByExchange(filterText));
         }
     }
