@@ -1,11 +1,10 @@
-package app;
+package app.ux;
 
 import app.entities.ETF;
 import app.repository.EtfRepository;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -34,13 +33,34 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
      * The currently edited etf
      */
     private ETF etf;
-    private String information = "Default ETF description";
 
     /* Fields to edit properties in Customer entity */
-    TextField exchange = new TextField("exchange");
-    TextField totalExpenseRatio = new TextField("totalExpenseRatio");
-    TextArea description = new TextArea("description");
-    TextArea fundDomicile = new TextArea("Country of fund");
+    TextArea description = new TextArea("ETF short description");
+
+    TextField exchange = new TextField("Exchange");
+    TextField isim = new TextField("ISIM code");
+    TextField distributionPolicy = new TextField("Dividend distribution");
+    TextField totalExpenseRatio = new TextField("T.E.R.");
+    HorizontalLayout basicInfo = new HorizontalLayout(exchange,
+            isim, distributionPolicy, totalExpenseRatio);
+
+
+    TextField distributionFrequency = new TextField("Distribution freq");
+    TextField performanceInclDividend = new TextField("Performance");
+    TextField weeksLowhigh = new TextField("Low-High");
+    TextField volatilityYearInEur = new TextField("Volatility");
+    HorizontalLayout performance = new HorizontalLayout(distributionFrequency,
+            performanceInclDividend, weeksLowhigh, volatilityYearInEur);
+
+
+    TextField fundDomicile = new TextField("Country");
+    TextField fundSize = new TextField("Size");
+    TextField replication = new TextField("Replication");
+    TextField fundCurrency = new TextField("Currency");
+    TextField currencyRisk = new TextField("Currency risk");
+    TextField fundProvider = new TextField("Provider");
+    HorizontalLayout otherInfo = new HorizontalLayout(fundDomicile,
+            fundSize, replication, fundCurrency, currencyRisk, fundProvider);
 
 
     /* Action buttons */
@@ -56,13 +76,8 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
     @Autowired
     public EtfEditor(EtfRepository repository) {
         this.repository = repository;
-
-        Label descriptionLabel = new Label(information);
-        HorizontalLayout informationLayout = new HorizontalLayout();
-        informationLayout.add(descriptionLabel);
-
         description.setWidthFull();
-        add(informationLayout, exchange, totalExpenseRatio, description, fundDomicile, actions);
+        add(description, basicInfo, performance, otherInfo, actions);
 
         // bind using naming convention
         binder.bindInstanceFields(this);

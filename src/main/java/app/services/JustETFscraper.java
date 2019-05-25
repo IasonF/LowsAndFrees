@@ -1,6 +1,7 @@
-package app.webscrapers;
+package app.services;
 
-import app.utils.ApplicationDirectories;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,18 +10,40 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static app.utils.Directories.HTMLS_DIRECTORY;
 
-public class JustETF {
-    private static final Logger logger = Logger.getLogger(JustETF.class.getName());
-    static Path outputDir = ApplicationDirectories.dataDir("LowsAndFrees");
+@Service
+public class JustETFscraper {
 
-    public static void fetchHTML(String isim) {
+    private static final Logger logger = Logger.getLogger(JustETFscraper.class.getName());
+    static Path outputDir = HTMLS_DIRECTORY;
+
+    @Autowired
+    private DeGiroList deGiroList;
+
+    public void update() {
+        deGiroList.getIsim().forEach(this::fetchHTML);
+    }
+
+    public void fetchHTML(String isim) {
+
+        try {
+            if (Files.walk(HTMLS_DIRECTORY)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .anyMatch(s -> s.contains(isim)))
+                return;
+        } catch (IOException e) {
+            System.out.println(("Cannot access " + HTMLS_DIRECTORY));
+            e.printStackTrace();
+        }
 
         URL justETFwebpage = null;
         try {
@@ -40,7 +63,7 @@ public class JustETF {
 
     }
 
-    public static void fetchHTML(List<String> list) {
-        list.forEach(JustETF::fetchHTML);
+    public void fetchHTML(List<String> list) {
+        list.forEach(this::fetchHTML);
     }
 }

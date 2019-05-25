@@ -1,20 +1,34 @@
 package app;
 
-import app.entities.ETF;
-import app.parsers.HTML;
+import app.entities.CountryWebsite;
 import app.repository.EtfRepository;
-import app.webscrapers.DeGiro;
+import app.services.DeGiroList;
+import app.services.HTMLparser;
+import app.services.JustETFscraper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import java.util.*;
+
 import java.util.logging.Logger;
 
 @SpringBootApplication
 public class Lows {
 
     private static final Logger logger = Logger.getLogger(Lows.class.getName());
+    private static final boolean Update = true;
+
+    private DeGiroList deGiroList;
+    private JustETFscraper justETFscraper;
+    private HTMLparser parser;
+
+    @Autowired
+    public Lows(DeGiroList deGiroList, JustETFscraper justETFscraper, HTMLparser parser) {
+        this.deGiroList = deGiroList;
+        this.justETFscraper = justETFscraper;
+        this.parser = parser;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Lows.class);
@@ -23,21 +37,15 @@ public class Lows {
     @Bean
     public CommandLineRunner demo(EtfRepository repository) {
         return (args) -> {
-//            repository.deleteAll();
-            if (repository.count() == 0) {
-                logger.info("ETF database is empty. Start populating...");
-                List<String> codes = DeGiro.getCodes();
-                List<String> exchanges = DeGiro.getExchanges();
-                List<ETF> etfs = new ArrayList<>();
-                ETF newEtf;
-                for (int i = 0; i < codes.size(); i++) {
-                    newEtf = HTML.parse(codes.get(i), exchanges.get(i));
-                    etfs.add(newEtf);
-                    repository.save(newEtf);
-                }
-            }
-            else
-                logger.info("ETF database has " + repository.count() + " entries.");
+            repository.deleteAll();
+            logger.info("Start populating ETF database.");
+
+            deGiroList.setCountry(CountryWebsite.UK);
+            deGiroList.update();
+            justETFscraper.update();
+            parser.update();
+
+            logger.info("The database has " + repository.count() + " entries.");
         };
     }
 

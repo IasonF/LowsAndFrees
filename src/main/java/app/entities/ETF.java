@@ -8,23 +8,24 @@ import javax.persistence.*;
 @Data
 @Entity
 @NoArgsConstructor
+@Table(name = "ETFs")
 public class ETF {
     @Id
     private Long id;
     String isim;
     @Lob
-    String description;
-    String totalExpenseRatio;
-    String weeksLowhigh;
-    String fundSize;
-    String replication;
-    String fundCurrency;
-    String currencyRisk;
-    String volatilityYearInEur;
-    String exchange;
-    String distributionPolicy;
-    String distributionFrequency;
-    String fundDomicile;
-    String performanceInclDividend;
-    String fundProvider;
+    public String description;
+    public String totalExpenseRatio;
+    public String weeksLowhigh;
+    public String fundSize;
+    public String replication;
+    public String fundCurrency;
+    public String currencyRisk;
+    public String volatilityYearInEur;
+    public String exchange;
+    public String distributionPolicy;
+    public String distributionFrequency;
+    public String fundDomicile;
+    public String performanceInclDividend;
+    public String fundProvider;
 }
