@@ -5,13 +5,26 @@ It extracts ETF codes from a broker's document (i.e. pdf with freely tradable ET
 
 ## Getting Started
 
-Java command line app.
+Build and run with Maven:
+
+```
+mvn spring-boot:run
+```
+
+Access database at http://localhost:8080/
+
+Downloaded files are stored at home folder. Database is embedded. 
 
 ### Prerequisites
 
-Build with Maven.
+* JDK 11 
+* Maven
 
-```
-Give examples
-```
-app.apps.repository
+### Libraries 
+
+* JSoup for web scrapping
+* Vaadin for UI
+* PDFBox for pdf parsing
+
+![Sample](https://github.com/IasonF/LowsAndFrees/blob/master/src/main/resources/Sample.png)
+
