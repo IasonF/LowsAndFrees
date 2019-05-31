@@ -20,6 +20,13 @@ public final class Directories {
         APP_DIRECTORY = Paths.get(System.getProperty("user.home"), APP_NAME);
         HTMLS_DIRECTORY = APP_DIRECTORY.resolve("HTMLs");
         LISTS_DIRECTORY = APP_DIRECTORY.resolve("Lists");
+        try {
+            Files.createDirectories(APP_DIRECTORY);
+            Files.createDirectories(HTMLS_DIRECTORY);
+            Files.createDirectories(LISTS_DIRECTORY);
+        } catch (IOException e) {
+            System.out.println("Cannot create directories. " + e.getMessage());
+        }
     }
 
     private Directories() {
