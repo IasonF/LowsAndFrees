@@ -6,8 +6,11 @@ import app.utils.Directories;
 import lombok.Data;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -18,7 +21,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static app.entities.CountryWebsite.IRELAND;
 import static app.utils.Directories.LISTS_DIRECTORY;
 
 @Data
@@ -27,29 +29,36 @@ public class DeGiroList {
 
     private static final Logger logger = Logger.getLogger(DeGiroList.class.getName());
 
+    @Value("${DeGiro.country}")
+    CountryWebsite country;
 
     List<String> isim = new ArrayList<>();
     List<Exchange> exchanges = new ArrayList<>();
     Map<String, String> pairs = new HashMap<>();
-    CountryWebsite country;
 
+    @PostConstruct
+    public void onStartup() {
+        update();
+    }
+
+    @Scheduled(cron = "${DeGiro.update.period}")
     public void update() {
         downloadList();
         populateList();
     }
 
-    public void downloadList() {
+    private void downloadList() {
 
         URL url = null;
         try {
             url = new URL(country.getAddress());
         } catch (MalformedURLException e) {
-            logger.warning("Please check that " + IRELAND + " is accessible.");
+            logger.warning("Please check that " + country + " is accessible.");
             e.printStackTrace();
         }
 
         Path out = LISTS_DIRECTORY.resolve(country.toString() + ".pdf");
-        try (InputStream in = url.openStream()) {
+        try (InputStream in = Objects.requireNonNull(url).openStream()) {
             Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             logger.warning("Please check read/write permissions for " + Directories.LISTS_DIRECTORY);
@@ -57,7 +66,7 @@ public class DeGiroList {
         }
     }
 
-    public void populateList() {
+    private void populateList() {
 
         Path pdfPath = LISTS_DIRECTORY.resolve(country.toString() + ".pdf");
         try (PDDocument document = PDDocument.load(pdfPath.toFile())) {

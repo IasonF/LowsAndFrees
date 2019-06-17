@@ -1,8 +1,10 @@
 package app.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -14,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,27 +26,22 @@ import static app.utils.Directories.HTMLS_DIRECTORY;
 public class JustETFscraper {
 
     private static final Logger logger = Logger.getLogger(JustETFscraper.class.getName());
-    static Path outputDir = HTMLS_DIRECTORY;
+    private static Path outputDir = HTMLS_DIRECTORY;
 
     @Autowired
     private DeGiroList deGiroList;
 
+    @PostConstruct
+    public void onStartup() {
+        update();
+    }
+
+    @Scheduled(cron = "${JustETF.update.period}" )
     public void update() {
         deGiroList.getIsim().forEach(this::fetchHTML);
     }
 
-    public void fetchHTML(String isim) {
-
-        try {
-            if (Files.walk(HTMLS_DIRECTORY)
-                    .map(Path::getFileName)
-                    .map(Path::toString)
-                    .anyMatch(s -> s.contains(isim)))
-                return;
-        } catch (IOException e) {
-            System.out.println(("Cannot access " + HTMLS_DIRECTORY));
-            e.printStackTrace();
-        }
+    private void fetchHTML(String isim) {
 
         URL justETFwebpage = null;
         try {
@@ -52,7 +50,7 @@ public class JustETFscraper {
             logger.log(Level.WARNING, "URL is not valid: " + justETFwebpage + e.getMessage());
         }
 
-        try (InputStream inputStream = justETFwebpage.openStream();
+        try (InputStream inputStream = Objects.requireNonNull(justETFwebpage).openStream();
              ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
              FileChannel fileChannel = FileChannel.open(outputDir.resolve(isim + ".html"),
                      StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
@@ -63,7 +61,4 @@ public class JustETFscraper {
 
     }
 
-    public void fetchHTML(List<String> list) {
-        list.forEach(this::fetchHTML);
-    }
 }

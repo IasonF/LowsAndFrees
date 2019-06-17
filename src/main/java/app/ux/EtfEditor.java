@@ -63,13 +63,6 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
             fundSize, replication, fundCurrency, currencyRisk, fundProvider);
 
 
-    /* Action buttons */
-    // TODO why more code?
-    Button save = new Button("Save", VaadinIcon.CHECK.create());
-    Button cancel = new Button("Cancel");
-    Button delete = new Button("Delete", VaadinIcon.TRASH.create());
-    HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
-
     Binder<ETF> binder = new Binder<>(ETF.class);
     private ChangeHandler changeHandler;
 
@@ -77,35 +70,15 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
     public EtfEditor(EtfRepository repository) {
         this.repository = repository;
         description.setWidthFull();
-        add(description, basicInfo, performance, otherInfo, actions);
+        add(description, basicInfo, performance, otherInfo);
 
         // bind using naming convention
         binder.bindInstanceFields(this);
 
         // Configure and style components
         setSpacing(true);
-
-        save.getElement().getThemeList().add("primary");
-        delete.getElement().getThemeList().add("error");
-
-        addKeyPressListener(Key.ENTER, e -> save());
-
-        // wire action buttons to save, delete and reset
-        save.addClickListener(e -> save());
-        delete.addClickListener(e -> delete());
-        cancel.addClickListener(e -> editETF(etf));
-        setVisible(false);
     }
 
-    void delete() {
-        repository.delete(etf);
-        changeHandler.onChange();
-    }
-
-    void save() {
-        repository.save(etf);
-        changeHandler.onChange();
-    }
 
     public interface ChangeHandler {
         void onChange();
@@ -123,7 +96,6 @@ public class EtfEditor extends VerticalLayout implements KeyNotifier {
         } else {
             etf = c;
         }
-        cancel.setVisible(persisted);
 
         // Bind etf properties to similarly named fields
         // Could also use annotation or "manual binding" or programmatically

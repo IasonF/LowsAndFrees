@@ -1,8 +1,9 @@
 # Lows&Frees
 
 A small app to implement the "Keep costs low" rule of Bogleheads<sup>®</sup> investment philosophy in European ETF investing.
-It extracts ETF codes from a broker's document (i.e. pdf with freely tradable ETFs on DeGiro) and builds a database with their characteristics for easy comparison.
-Running on AWS at http://lows.eu-central-1.elasticbeanstalk.com/
+It extracts the ETF codes from a broker's document 
+([DeGiro commission free ETFs](https://www.degiro.co.uk/data/pdf/uk/commission-free-etfs-list.pdf)) and builds a database with their characteristics for easy comparison.
+The app is also deployed and accesible on [AWS](http://lows.eu-central-1.elasticbeanstalk.com/).
 
 ## Getting Started
 
@@ -12,7 +13,7 @@ Build and run with Maven:
 mvn spring-boot:run
 ```
 
-Access database at http://localhost:8080/
+Access database at http://localhost:5000/
 
 Downloaded files are stored at home folder. Database is embedded. 
 

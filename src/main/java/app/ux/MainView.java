@@ -2,8 +2,10 @@ package app.ux;
 
 import app.entities.ETF;
 import app.repository.EtfRepository;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -28,8 +30,16 @@ public class MainView extends VerticalLayout {
         this.grid = new Grid<>(ETF.class);
         this.filter = new TextField();
 
+        Label label = new Label("List of ETFs that can be traded without commission on DeGiro. \n " +
+                "The list of codes is updated daily from  " +
+                "//www.degiro.co.uk/data/pdf/uk/commission-free-etfs-list.pdf." +
+                "Every calendar month the first trade for each ETF is always commission free." +
+                "Any additional trade is also free if: \n " +
+                "(a) the trade amount is more than 1000 euros AND \n" +
+                "(b) the trade is on the same directions (if the first free trade was a buy, the next free has to be a buy also.");
+
         // build layout
-        add(filter, grid, editor);
+        add(label, filter, grid, editor);
 
         filter.setPlaceholder("Search...");
         filter.setValueChangeMode(ValueChangeMode.EAGER);

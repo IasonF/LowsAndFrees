@@ -9,8 +9,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -34,11 +36,18 @@ public class HTMLparser {
         this.repo = repo;
     }
 
-    private ETF etf;
+    @PostConstruct
+    public void onStartup() {
+        update();
 
+    }
+
+    @Scheduled(cron = "${parser.update.period}")
     public void update() {
         deGiroList.getPairs().forEach(this::parse);
     }
+
+    private ETF etf;
 
     public void parse(String isim, String exchange) {
         etf = new ETF();
