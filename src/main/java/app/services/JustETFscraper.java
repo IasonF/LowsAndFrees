@@ -1,6 +1,7 @@
 package app.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -31,9 +33,13 @@ public class JustETFscraper {
     @Autowired
     private DeGiroList deGiroList;
 
+    @Autowired
+    private Environment environment;
+
     @PostConstruct
     public void onStartup() {
-        update();
+        Arrays.asList(environment.getDefaultProfiles()).forEach(System.out::println);
+//        update();
     }
 
     @Scheduled(cron = "${JustETF.update.period}" )
